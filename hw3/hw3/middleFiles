@@ -1,5 +1,5 @@
 #!/bin/bash
-x=`find "$1" -maxdepth 1 -type f | wc -l` #number of files in the directory
+x=`find "$1" -maxdepth 1 -type f | wc -l` ##number of files in the directory
 (( y=$x-$3 )) #the last file to keep
 (( z=$2+1 ))  #the first file to keep
 if [[ $x -le $2 ]] || [[ $3 -ge $x ]] || [[ $z -gt $y ]] || [[ $z -lt 0 ]] || [[ $2 -lt 0 ]] || [[ $3 -lt 0 ]]; then
