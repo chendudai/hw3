@@ -16,5 +16,13 @@ typedef void (*DelFunction)(pNode e);
 pTree TreeCreate(GetKeyFunction pGetKeyFunc, CloneFunction pCloneFunc, PrintFunction pPrintFunc, DelFunction pDelteFunc, int k);
 void TreeDestroy(pTree my_tree);
 int TreeNodesCount(pTree my_tree);
+Result TreeAddLeaf(pTree my_tree, int key, pNode new_node);
+Result TreeNodeIsActive(pTree my_tree, int key, Bool* active);
+Result TreeNodeIsLeaf(pTree my_tree, int key, Bool* active);
+Result TreeDelLeaf(pTree my_tree, int key);
+pNode TreeGetRoot(pTree my_tree);
+pNode TreeGetNode(pTree mytree, int key);
+pNode* TreeGetChildren(pTree my_tree, int key);
+
 
 #endif
