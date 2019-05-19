@@ -5,7 +5,6 @@
 #include "defs.h"
 #include "gentree.h"
 
-
 /* definition of the element in the tree */
 typedef struct _ELEMENT* PELEMENT;
 typedef struct _ELEMENT{
@@ -87,8 +86,8 @@ void TreeDestroy_rec(pTree my_tree, PELEMENT p_element)
 		TreeDestroy_rec(my_tree, p_element->children[i]);
 	}
 	my_tree->delete_node(p_element->obj);
-	if (p_element->children != NULL)
-		free(p_element->children);
+	 if(p_element->children != NULL)
+			free(p_element->children);
 	free(p_element);
 }
 
@@ -234,7 +233,7 @@ Result TreeAddLeaf(pTree my_tree,int key,pNode new_node)
 
 PELEMENT find_key(pTree my_tree,PELEMENT p_element, int key)
 {
-	if (my_tree == NULL || p_element ==NULL)
+	if (my_tree == NULL || p_element ==NULL || p_element->obj == NULL)
 		return NULL;
 	if (my_tree->get_key(p_element->obj) == key)
 	{
@@ -320,6 +319,13 @@ Result TreeDelLeaf(pTree my_tree, int key)
 			PELEMENT element_with_key = find_key(my_tree, my_tree->head, key);
 			if (element_with_key == NULL)
 				return FAILURE;
+			
+			for (int i = 0; i < my_tree->k; i++) //Putting NULL in the children array of the parent of the the deleted leaf  
+			{
+				if (element_with_key->parent->children[i] != NULL && my_tree->get_key(element_with_key->parent->children[i]->obj) == key) {
+					element_with_key->parent->children[i] = NULL;
+				}
+			}
 			my_tree->delete_node(element_with_key->obj);
 			if (element_with_key->children != NULL)
 				free(element_with_key->children);
