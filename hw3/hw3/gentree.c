@@ -42,6 +42,8 @@ void TreeDestroy_rec(pTree my_tree, PELEMENT p_element);
 
 pTree TreeCreate(GetKeyFunction pGetKeyFunc, CloneFunction pCloneFunc, PrintFunction pPrintFunc, DelFunction pDelteFunc,int k)
 {
+	if (k <= 0 || !pGetKeyFunc || !pCloneFunc || !pPrintFunc || !pDelteFunc)
+		return NULL;
 	pTree my_tree = (pTree)malloc(sizeof(Tree));
 	if (my_tree == NULL)
 		return NULL;
@@ -319,17 +321,29 @@ Result TreeDelLeaf(pTree my_tree, int key)
 			PELEMENT element_with_key = find_key(my_tree, my_tree->head, key);
 			if (element_with_key == NULL)
 				return FAILURE;
-			
-			for (int i = 0; i < my_tree->k; i++) //Putting NULL in the children array of the parent of the the deleted leaf  
+
+			if (element_with_key->parent != NULL)
 			{
-				if (element_with_key->parent->children[i] != NULL && my_tree->get_key(element_with_key->parent->children[i]->obj) == key) {
-					element_with_key->parent->children[i] = NULL;
+				for (int i = 0; i < my_tree->k; i++) //Putting NULL in the children array of the parent of the the deleted leaf  
+				{
+					if (element_with_key->parent->children[i] != NULL && my_tree->get_key(element_with_key->parent->children[i]->obj) == key) {
+						element_with_key->parent->children[i] = NULL;
+					}
 				}
 			}
+
+			else //element_with_key->parent == NULL. We are deleting the first node of the tree.
+			{
+				my_tree->head = NULL;
+			}
+
 			my_tree->delete_node(element_with_key->obj);
 			if (element_with_key->children != NULL)
 				free(element_with_key->children);
-			element_with_key->parent->childrenCount--;
+			if (element_with_key->parent != NULL)
+			{
+				element_with_key->parent->childrenCount--;
+			}
 			my_tree->nodes_num--;
 			free(element_with_key);
 			return SUCCESS;
