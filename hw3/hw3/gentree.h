@@ -4,8 +4,10 @@
 #include "defs.h"
 
 /* complete the definition of the pointer to Tree */
-typedef Tree* pTree;
 typedef void* pNode;
+typedef struct _tree Tree;
+typedef struct _tree* pTree;
+
 
 typedef int (*GetKeyFunction)(pNode e);
 typedef pNode (*CloneFunction)(pNode e);
