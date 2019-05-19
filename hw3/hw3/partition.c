@@ -3,10 +3,9 @@
 #include <memory.h>
 
 #include "defs.h"
-#include "partition.h"
 #include "gentree.h"
 
-pTree my_partion;
+pTree my_partition=NULL;
 
 
 typedef struct _SQUARE {
@@ -38,7 +37,40 @@ CloneFunction cloneFunc(pNode e)
 
 }
 
+DelFunction DelteFunc(pNode e)
+{
+	pSQUARE my_node = (pSQUARE)(e);
+	free(my_node);
+	return;
+}
+
+
+PrintFunction PrintFunc(pNode e)
+{
+	//@@@@@
+	return;
+}
+
+
+
+GetKeyFunction	(*pGetKeyFunc)(pNode e);
+CloneFunction	(*pCloneFunc)(pNode e);
+PrintFunction	(*pPrintFunc)(pNode e);
+DelFunction		(*pDelteFunc)(pNode e);
+
 void InitPartition()
 {
+	my_partition = TreeCreate(pGetKeyFunc, pCloneFunc, pPrintFunc, pDelteFunc, 4);
+	pSQUARE new_node;
+	new_node->x_i = 0;
+	new_node->x_f = 1;
+	new_node->y_i = 0;
+	new_node->y_f = 1;
 
+	TreeAddLeaf(my_partition, 1,new_node);
+}
+
+int set_part_key(int x, int y, pTree partition,)
+{
+	
 }
