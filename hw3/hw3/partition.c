@@ -5,7 +5,7 @@
 #include "defs.h"
 #include "gentree.h"
 
-pTree my_partition;
+pTree my_partition=NULL;
 int numOfNodes = 1;
 
 
@@ -14,15 +14,34 @@ typedef struct _SQUARE {
 	int key;//the key of each node will be the x cord of the square center
 } SQUARE, *pSQUARE;
 
+//******************************************************************************
+//* function name : getKeyFun
+//* Description   : Returns a node's key.
+//* Parameters    : poninter to the node.
+//* Return value  : key(int)
+//******************************************************************************
 GetKeyFunction getKeyFunc(pNode e)
 {
+	if (e == NULL)
+	{
+		return -1;
+	}
 	pSQUARE my_node = (pSQUARE)(e);
 	return my_node->key;
 }
 
-
+//******************************************************************************
+//* function name : cloneFunc
+//* Description   : Returns a node clone.
+//* Parameters    : poninter to node.
+//* Return value  : poninter to the cloned node.
+//******************************************************************************
 CloneFunction cloneFunc(pNode e)
 {
+	if (e == NULL)
+	{
+		return NULL;
+	}
 	pSQUARE orig_node = (pSQUARE)(e);
 	pSQUARE cloned_node = (pSQUARE)malloc(sizeof(SQUARE));
 	if (cloned_node == NULL)
@@ -38,16 +57,35 @@ CloneFunction cloneFunc(pNode e)
 
 }
 
+//******************************************************************************
+//* function name : DelteFunc
+//* Description   : Deletes a node.
+//* Parameters    : poninter to node.
+//* Return value  : None.
+//******************************************************************************
 DelFunction DelteFunc(pNode e)
 {
+	if (e == NULL)
+	{
+		return;
+	}
 	pSQUARE my_node = (pSQUARE)(e);
 	free(my_node);
 	return;
 }
 
-
+//******************************************************************************
+//* function name : PrintFunc
+//* Description   : Prints a node.
+//* Parameters    : poninter to node.
+//* Return value  : None.
+//******************************************************************************
 PrintFunction PrintFunc(pNode e)
 {
+	if (e == NULL)
+	{
+		return;
+	}
 	pSQUARE my_node = (pSQUARE)(e);
 	printf("[%f %f] [%f %f]", my_node->x_i, my_node->x_f, my_node->y_i, my_node->y_f);
 	return;
@@ -55,15 +93,22 @@ PrintFunction PrintFunc(pNode e)
 
 
 
-GetKeyFunction	(*pGetKeyFunc)(pNode e);
-CloneFunction	(*pCloneFunc)(pNode e);
-PrintFunction	(*pPrintFunc)(pNode e);
-DelFunction		(*pDelteFunc)(pNode e);
+GetKeyFunction	(*pGetKeyFunc)(pNode e) = getKeyFunc;
+CloneFunction	(*pCloneFunc)(pNode e)= cloneFunc;
+PrintFunction	(*pPrintFunc)(pNode e) = PrintFunc;
+DelFunction		(*pDelteFunc)(pNode e)= DelteFunc;
 
+//******************************************************************************
+//* function name : InitPartition
+//* Description   : Initiates the partition,with the first square [0 1] [0 1].
+//* Parameters    : None.
+//* Return value  : None.
+//******************************************************************************
 void InitPartition()
 {
 	numOfNodes=1;
 	TreeDestroy(my_partition);
+	
 	my_partition = TreeCreate(pGetKeyFunc, pCloneFunc, pPrintFunc, pDelteFunc, 4);
 	pSQUARE new_node = (pSQUARE)malloc(sizeof(SQUARE));
 	new_node->key = 1;
@@ -76,6 +121,13 @@ void InitPartition()
 	free(new_node);
 	return;
 }
+
+//******************************************************************************
+//* function name : set_part_key
+//* Description   : seraches for a given x,y cordinates,each suqare is its father,and returns the father key.
+//* Parameters    : x-horizontal cordinate of new point,y-vertical cordinate of new point(new point that refines the cell).square,pointer to possible father
+//* Return value  : None
+//******************************************************************************
 
 int set_part_key(double x, double y, pSQUARE square)
 {
@@ -99,7 +151,11 @@ int set_part_key(double x, double y, pSQUARE square)
 		
 		for (int i = 0; i < 4; i++)
 		{
-			free(children[i]);
+			if (children[i] != NULL)
+			{
+				free(children[i]);
+			}
+			
 		}
 		free(children);
 				
@@ -108,6 +164,12 @@ int set_part_key(double x, double y, pSQUARE square)
 	return key;
 }
 
+//******************************************************************************
+//* function name : RefineCell
+//* Description   : Refines the cell partition.
+//* Parameters    : x-horizontal cordinate of new point,y-vertical cordinate of new point(new point that refines the cell).
+//* Return value  : None
+//******************************************************************************
 
 void RefineCell(double x, double y)
 {
@@ -125,7 +187,7 @@ void RefineCell(double x, double y)
 	}
 	new_square->key = numOfNodes + 1;
 	numOfNodes++;
-	int new_sqr_size = (father_square->x_f - father_square->x_i)/2;
+	double new_sqr_size = (father_square->x_f - father_square->x_i)/2;
 	//now,setwhich quarter of father square is the new square
 	if ((x < (father_square->x_i + new_sqr_size) )&& (y < (father_square->y_i + new_sqr_size)))
 	{
@@ -160,12 +222,78 @@ void RefineCell(double x, double y)
 	TreeAddLeaf(my_partition, key, new_square);
 	free(father_square);
 	free(new_square);
+	free(first_square);
 	return;
 
 }
 
+//******************************************************************************
+//* function name : printRec
+//* Description   : Prints square minus all its children,and then the same for each child,recursivly.
+//* Parameters    : poninter to square.
+//* Return value  : None
+//******************************************************************************
 
+void printRec(pSQUARE square)
+{
+	pSQUARE *children = (pSQUARE*)(TreeGetChildren(my_partition, square->key));
+	PrintFunc(square);
+	for (int i = 0; i < 4; i++)//printing the suqare minus its subsquares.
+	{
+		if (children[i] != NULL)
+		{
+			printf("\\");
+			PrintFunc(children[i]);
+		}
+		if (i == 3)
+		{
+			printf("\n");
+		}
+	}
+	
+	for (int i = 0; i < 4; i++)
+	{
+		if (children[i] != NULL)
+			printRec(children[i]);
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		if (children[i] != NULL)
+		{
+			free(children[i]);
+		}
+
+	}
+	free(children);
+	
+}
+
+//******************************************************************************
+//* function name : PrintPartition
+//* Description   : Prints the partition.
+//* Parameters    : None.
+//* Return value  : None
+//******************************************************************************
 void PrintPartition()
 {
+	if (my_partition == NULL)
+	{
+		InitPartition;
+	}
+	pSQUARE first_square = (pSQUARE)(TreeGetRoot(my_partition));
+	printRec(first_square);
+	free(first_square);
+	return;
+}
 
+//******************************************************************************
+//* function name : DeletePartition
+//* Description   : Deletes the partition.
+//* Parameters    : None.
+//* Return value  : None
+//******************************************************************************
+void DeletePartition()
+{
+	numOfNodes = 1;
+	TreeDestroy(my_partition);
 }
