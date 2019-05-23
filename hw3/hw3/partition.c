@@ -20,7 +20,7 @@ typedef struct _SQUARE {
 //* Parameters    : poninter to the node.
 //* Return value  : key(int)
 //******************************************************************************
-GetKeyFunction getKeyFunc(pNode e)
+int getKeyFunc(pNode e)
 {
 	if (e == NULL)
 	{
@@ -36,7 +36,7 @@ GetKeyFunction getKeyFunc(pNode e)
 //* Parameters    : poninter to node.
 //* Return value  : poninter to the cloned node.
 //******************************************************************************
-CloneFunction cloneFunc(pNode e)
+pNode cloneFunc(pNode e)
 {
 	if (e == NULL)
 	{
@@ -63,7 +63,7 @@ CloneFunction cloneFunc(pNode e)
 //* Parameters    : poninter to node.
 //* Return value  : None.
 //******************************************************************************
-DelFunction DelteFunc(pNode e)
+void DelteFunc(pNode e)
 {
 	if (e == NULL)
 	{
@@ -80,7 +80,7 @@ DelFunction DelteFunc(pNode e)
 //* Parameters    : poninter to node.
 //* Return value  : None.
 //******************************************************************************
-PrintFunction PrintFunc(pNode e)
+void PrintFunc(pNode e)
 {
 	if (e == NULL)
 	{
@@ -93,10 +93,10 @@ PrintFunction PrintFunc(pNode e)
 
 
 
-GetKeyFunction	(*pGetKeyFunc)(pNode e) = getKeyFunc;
-CloneFunction	(*pCloneFunc)(pNode e)= cloneFunc;
-PrintFunction	(*pPrintFunc)(pNode e) = PrintFunc;
-DelFunction		(*pDelteFunc)(pNode e)= DelteFunc;
+GetKeyFunction	pGetKeyFunc = getKeyFunc;
+CloneFunction	pCloneFunc = cloneFunc;
+PrintFunction	pPrintFunc = PrintFunc;
+DelFunction		pDelteFunc= DelteFunc;
 
 //******************************************************************************
 //* function name : InitPartition
@@ -278,7 +278,7 @@ void PrintPartition()
 {
 	if (my_partition == NULL)
 	{
-		InitPartition;
+		InitPartition();
 	}
 	pSQUARE first_square = (pSQUARE)(TreeGetRoot(my_partition));
 	printRec(first_square);
