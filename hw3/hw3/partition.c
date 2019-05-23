@@ -87,7 +87,7 @@ void PrintFunc(pNode e)
 		return;
 	}
 	pSQUARE my_node = (pSQUARE)(e);
-	printf("[%f %f] [%f %f]", my_node->x_i, my_node->x_f, my_node->y_i, my_node->y_f);
+	printf("([%f, %f], [%f, %f])", my_node->x_i, my_node->x_f, my_node->y_i, my_node->y_f);
 	return;
 }
 
